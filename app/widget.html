@@ -369,6 +369,11 @@
     .footer-bar span {
       font-size: 16px !important;
     }
+    .signatureFields{
+      font-size: 16pt !important;
+      font-weight: 1000 !important;
+      font-style: italic !important;
+    }
 
     /* Company header info */
     #companyHeader p {
@@ -538,7 +543,7 @@
       line-height: 1.2;
     }
     table, th, td {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   border-collapse: collapse;
 }
 
@@ -782,7 +787,19 @@
             console.log("Deal data-----------------------------", data.details.statusMessage.data[0]);
             dealRecordMap = data.details.statusMessage.data[0];
 
-            document.getElementById("mainheading").innerText = dealRecordMap.TOMCO_Company || "";
+            // const mainheading = document.getElementById("mainheading")
+            // console.log(mainheading);
+            console.log(dealRecordMap.TOMCO_Company);
+            
+            if(dealRecordMap.TOMCO_Company == "TOMCO Production Services BC Ltd."){
+              // document.mainheading.innerText = "TOMCO Production Services (BC) Ltd.";
+              document.getElementById("mainheading").innerHTML = "TOMCO Production Services (BC) Ltd.";
+              console.log("if");
+            }
+            else{
+              document.getElementById("mainheading").innerHTML = dealRecordMap.TOMCO_Company || "";
+              console.log("else");
+            }
             // document.getElementById("companyNameFooter").innerText = dealRecordMap.TOMCO_Company || "";
 
             console.log("dealRecordMap.Job_Start_Date", dealRecordMap.Job_Start_Date);
@@ -1121,8 +1138,11 @@
           <td style="padding: 6pt; font-size: 12px;"><span id="siteAddress"></span></td>
         </tr>
         <tr>
-          <td colspan="2" style="padding: 6pt; font-size: 12px;">
+          <td style="padding: 6pt; font-size: 12px;">
             <span id="preparedBillingAddress"></span>
+          </td>
+          <td>
+
           </td>
           <!-- <td style="padding: 6pt; font-size: 12px;"><span id="contactName"></span></td> -->
         </tr>
@@ -1177,7 +1197,7 @@
         style="min-width: 100pt;font-size: 16px; font-weight: 500;">
         Estimated Start Date:
       </label>
-      <div id="estimatedStartDate" style="padding: 1pt 12pt; min-width: 150pt; font-size: 12px;">
+      <div id="estimatedStartDate" style="padding: 1pt 12px; min-width: 150pt; font-size: 12px;">
       </div>
     </div>
 
@@ -1244,7 +1264,7 @@
                 margin-bottom: 10pt;
                 height: 30pt;
               "></div>
-            <p style="text-align: center; font-style: italic; font-weight: bold">
+            <p style="text-align: center; font-style: italic; font-weight: 700; font-size: 16px;" class="signatureFields">
               Signature of Acceptance
             </p>
           </td>
@@ -1255,7 +1275,7 @@
                 margin-bottom: 10pt;
                 height: 30pt;
               "></div>
-            <p style="text-align: center; font-style: italic; font-weight: bold">
+            <p style="text-align: center; font-style: italic; font-weight: 700; font-size: 16px;"" class="signatureFields">
               Signature Date
             </p>
           </td>
