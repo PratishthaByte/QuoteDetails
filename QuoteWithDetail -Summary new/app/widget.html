@@ -1,0 +1,1343 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" />
+  <script src="https://live.zwidgets.com/js-sdk/1.0.5/ZohoEmbededAppSDK.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/loaders.css/0.1.2/loaders.min.css" />
+  <title>Zoho Widget HTML Table</title>
+  <style>
+    /* Add these to your existing styles */
+
+/* 
+    #pdfContent {
+  transform: scale(0.6);
+  transform-origin: top left;
+  width: 160%;
+} */
+
+
+    .page-break-avoid {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .page-break-before {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    .page-break-after {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* Ensure tables don't break across pages */
+    table {
+      page-break-inside: auto;
+    }
+
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    /* For your group sections */
+    .group-section {
+      page-break-inside: avoid;
+      break-inside: avoid-page;
+      margin-bottom: 10px;
+    }
+
+    .cost_breakdownImp{
+      font-size:16pt !important;
+      font-weight:1000 !important;
+    }
+
+    /* ---------------------------------------------------------------------------- */
+    .cost-table-container {
+      margin: 20pt 0;
+    }
+
+    body {
+      font-family: Calibri, sans-serif;
+    }
+
+    strong {
+      font-size: large;
+    }
+
+    span {
+      font-size: medium !important;
+    }
+
+    th {
+      font-size:16pt !important;
+      font-weight:1000 !important;
+      font-family: Calibri, sans-serif;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .quote-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10pt 0;
+    }
+
+    .quote-table th,
+    .quote-table td {
+      border: 1pt solid #ddd;
+      padding: 8pt;
+      text-align: left;
+    }
+
+    .quote-table th {
+      background-color: #1a4c6f;
+      color: white;
+    }
+
+    .total-section {
+      margin-top: 20pt;
+      font-size: 18pt;
+      text-align: right;
+      padding: 10pt;
+      background-color: #f5f5f5;
+    }
+
+    #estimatedStartDate{
+      font-size: 13pt !important;
+    }
+
+    .loader {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .quote-table-container {
+      margin: 20pt 0;
+      border: 1pt solid #dee2e6;
+      border-radius: 4pt;
+      overflow-x: auto;
+    }
+
+    .quote-table {
+      width: 100%;
+      margin-bottom: 0;
+    }
+
+    .quote-table th {
+      background-color: #1a4c6f;
+      color: white;
+      padding: 8pt 12pt;
+    }
+
+    .quote-table td {
+      padding: 8pt 12pt;
+      vertical-align: middle;
+    }
+
+    .group-header {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    .total-section {
+      padding: 16px;
+      text-align: right;
+      background-color: #f8f9fa;
+      border-top: 2pt solid #dee2e6;
+    }
+
+    .rich-text-content {
+      page-break-inside: avoid;
+      break-inside: avoid-page;
+      overflow-wrap: break-word;
+
+    }
+
+    .rich-text-content p {
+      margin: 0 0 8pt 0;
+    }
+
+    .rich-text-content ul {
+      margin: 0;
+      padding-left: 20pt;
+    }
+
+    .page-section {
+      margin-bottom: 20pt;
+    }
+
+    .page {
+      width: 1120pt;
+      min-height: 900pt;
+      padding: 20pt;
+      margin-bottom: 20pt;
+      background: white;
+    }
+
+    .section-header {
+      background: #1a4c6f;
+      color: white;
+      padding: 5pt;
+      margin: 10pt 0;
+    }
+
+    .signature-section {
+      margin-top: 30pt;
+      padding: 10pt;
+      border-top: 1pt solid #000;
+    }
+
+    .cost-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10pt 0;
+    }
+
+    .cost-table th,
+    .cost-table td {
+      border: 1pt solid #ddd;
+      padding: 4pt;
+      text-align: left;
+    }
+
+    .footer-bar {
+      background-color: #2b5c9e;
+      color: white;
+      padding: 5pt 16px;
+      font-size: 18pt;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .footer-bar span {
+      margin-right: 10pt;
+      white-space: nowrap;
+    }
+
+    .footer-bar .page-info {
+      margin-left: auto;
+    }
+
+    .group-section {
+      margin-bottom: 30pt;
+      page-break-inside: avoid;
+    }
+
+    .group-header {
+      background-color: #f8f9fa;
+      padding: 8pt 12pt;
+      border: 1pt solid #dee2e6;
+      border-bottom: none;
+      font-weight: bold;
+    }
+
+    .group-total {
+      text-align: right;
+      padding: 8pt;
+      background-color: #f8f9fa;
+      border: 1pt solid #dee2e6;
+      border-top: none;
+      font-weight: bold;
+    }
+
+    body {
+      font-family: Calibri, sans-serif;
+      font-size: 18pt;
+      /* Increased from 10pt */
+      /* max-width: 95%; */
+    }
+
+    /* Headers and titles */
+    h1 {
+      font-size: 28pt !important;
+      /* Company name */
+    }
+
+    h2 {
+      font-size:16pt !important;
+      font-weight:1000 !important;
+      /* Section headers like "Scope of Work" */
+      margin-bottom: 16px !important;
+    }
+
+    #Scope_of_work{
+      font-size: 13pt !important;
+    }
+
+    h3 {
+      font-size:16pt !important;
+      font-weight:1000 !important;
+
+      /* Subsection headers */
+      margin-bottom: 12pt !important;
+    }
+
+    h4 {
+      font-size: 18pt !important;
+
+      /* Smaller headers */
+    }
+
+    /* Table styling */
+    table {
+      font-size: 18pt !important;
+    }
+
+    th {
+      font-size: 16px;
+      font-family: Calibri, sans-serif;
+      padding: 8pt !important;
+    }
+
+    td {
+      font-size: 18pt !important;
+      padding: 8pt !important;
+    }
+
+    /* Form elements and labels */
+    strong {
+      font-size: 18pt !important;
+    }
+    .btheading span{
+      font-size: large !important;
+    }
+
+    /* span {
+      font-size: 12px !important;
+    } */
+
+    label {
+      font-size:16pt !important;
+      font-weight:1000 !important;
+    }
+
+    /* Specific section styling */
+    .page-section {
+      margin-bottom: 25pt;
+    }
+
+    .section-header {
+      font-size: 18pt !important;
+    }
+
+    .rich-text-content {
+      font-size: 18pt !important;
+      line-height: 1.5;
+    }
+
+    .group-header h4 {
+      font-size: 16pt !important;
+    }
+
+    .group-total {
+      font-size: 18pt !important;
+    }
+
+    .total-section {
+      font-size: 16px !important;
+    }
+
+    /* Signature section */
+    .signature-section p {
+      font-size: 16px !important;
+    }
+
+    /* Footer */
+    .footer-bar {
+      font-size: 16px !important;
+    }
+
+    .footer-bar span {
+      font-size: 16px !important;
+    }
+
+    /* Company header info */
+    #companyHeader p {
+      font-size: 16px !important;
+    }
+
+    #companyPhone,
+    #companyEmail {
+      font-size: 16px !important;
+    }
+
+    /* Quote info section */
+    #quoteNo,
+    #quoteDate,
+    #expiryDate,
+    #managingBranch {
+      font-size: large !important;
+    }
+
+    /* Contact info tables */
+    #preparedContactName,
+    #siteLocation,
+    #preparedCompany,
+    #siteAddress,
+    #preparedBillingAddress,
+    #contactName,
+    #sitePhone,
+    #siteEmail,
+    #preparedUserName,
+    #siteContactName,
+    #preparedUserPhone,
+    #siteContactPhone,
+    #preparedUserEmail,
+    #siteContactEmail {
+      /* font-size: 18pt !important; */
+      font-size: 13pt !important;
+    }
+
+    /* Cost breakdown tables */
+    .quote-table {
+      font-size: 18pt !important;
+    }
+
+    .quote-table th {
+      font-size: 16pt !important;
+    }
+
+    .quote-table td {
+      font-size: 13pt !important;
+    }
+
+    /* Buttons */
+    .btn {
+      font-size: 18pt !important;
+      padding: 8pt 20pt !important;
+    }
+
+    /* Responsive adjustments */
+    /* Print-specific styles */
+    
+    @media print {
+  /* Reset and base styles */
+  body.printing-pdf {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: white !important;
+  }
+
+  /* Ensure all content is visible */
+  body.printing-pdf * {
+    visibility: visible !important;
+  }
+
+  /* Page break control */
+  .avoid-break, 
+  .group-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+  }
+
+  /* Table specific controls */
+  table {
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  /* Hide non-essential elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Force page breaks when needed */
+  .page-break-before {
+    page-break-before: always !important;
+  }
+
+  .page-break-after {
+    page-break-after: always !important;
+  }
+}
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: none !important;
+    }
+
+    .container {
+      width: 96% !important;
+      max-width: 96%;
+      /* Adjust this value as needed */
+      margin: 0 auto !important;
+      padding: 20pt !important;
+    }
+
+    .page-break-control-container>* {
+      page-break-inside: avoid;
+      break-inside: avoid-page;
+      margin-bottom: 16px;
+      /* gives breathing room between sections */
+    }
+
+    /* Default for most elements */
+    #pdfContent>* {
+      page-break-inside: avoid;
+    }
+
+    /* Allow breaks in certain places */
+    .allow-break {
+      page-break-inside: auto;
+    }
+
+    /* Force breaks before major sections */
+    .section-header {
+      page-break-before: always;
+    }
+
+    table {
+      page-break-inside: auto;
+    }
+
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    td {
+      page-break-inside: avoid;
+    }
+
+    /* Add this to your existing styles */
+    .field-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10pt;
+    }
+
+    .field-value {
+      margin-left: 10pt;
+      vertical-align: middle;
+      line-height: 1.2;
+    }
+    table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+#proposalConditions span, #tomcoSupply span, #customerSupply span{
+  font-size: large !important;
+}
+  </style>
+  <script>
+    var rec_id = "";
+    var RecordMap = {};
+    var quoteNumber = "";
+    var Quotes_Number = "";
+
+    var quoteDate = "";
+    var deal_ID = "";
+    var dealRecordMap;
+    Quoted_Items = [];
+    var Branch = "";
+    var Valid_Till = "";
+    var Quote_Number = "";
+    var Account_Name = "";
+    var Phone = "";
+    var Email = "";
+    var contactRecordMap = {};
+
+    function formatDateToMDY(inputDate) {
+      const date = new Date(inputDate);
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}-${day}-${year}`;
+    }
+
+    function calculateGroupTotalAmount(products) {
+      console.log("Products in Group:-------------------✔️✔️", products);
+      return products.reduce((total, product) => {
+        // console.log("Product:Net_Total-------------------",product.Net_Total );
+        return total + (product.Total_After_Discount || 0);
+      }, 0);
+    }
+
+    function groupProductsByGroupName(productDetails) {
+      const grouped = {};
+      productDetails.forEach((product) => {
+        const groupName = product.Group || "Ungrouped";
+        if (!grouped[groupName]) {
+          grouped[groupName] = [];
+        }
+        grouped[groupName].push(product);
+      });
+      return grouped;
+    }
+    function calculateGroupTotalAmount(products) {
+      return products.reduce((total, product) => {
+        return total + (product.Net_Total || 0);
+      }, 0);
+    }
+
+    function groupProductsByGroupName(productDetails) {
+      const grouped = {};
+      productDetails.forEach((product) => {
+        const groupName = product.Group || "Ungrouped";
+        if (!grouped[groupName]) {
+          grouped[groupName] = [];
+        }
+        grouped[groupName].push(product);
+      });
+      return grouped;
+    }
+
+    function calculateGroupTotal(products) {
+      return products.reduce((total, product) => {
+        return total + (product.Total_After_Discount);
+      }, 0);
+    }
+
+    function createGroupedTables(groupedProducts) {
+      const container = document.getElementById('productTableContainer');
+      container.innerHTML = '';
+
+      let grandTotal = 0;
+
+      Object.keys(groupedProducts).forEach(groupName => {
+        const groupTotal = calculateGroupTotal(groupedProducts[groupName]);
+        grandTotal += groupTotal;
+
+        const groupSection = document.createElement('div');
+        groupSection.className = 'group-section';
+        groupSection.innerHTML = `
+            <div class="group-header">
+                <h4>${groupName}</h4>
+            </div>
+            <table class="quote-table avoid-break table-border table" style="border: 1px solid black; border-collapse: collapse;font-size: 12px; width: 100%">
+                <thead style="background-color: #1a4c6f !important">
+                    <tr class="avoid-break" style="background-color: #1a4c6f !important; color: #fff">
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">#</th>
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">Quoted Line Item</th>
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">Quantity</th>
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">UOM</th>
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">Unit Price</th>
+                        <th style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;background-color: #1a4c6f !important; color: #fff;">Ext. Price</th>
+                    </tr>
+                </thead>
+                <tbody class="product-rows">
+                    ${groupedProducts[groupName].map((item, index) => `
+                        <tr class="avoid-break">
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${index + 1}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${item.Product_Name?.name || 'N/A'}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${item.Quantity || 0}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${item.UOM || 'N/A'}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${item.List_Price?.toFixed(2) || '0.00'}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse;font-size: 12px; padding:5px 10px;">${(item.Total_After_Discount).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <div class="group-total" style="text-align: right;">
+                <strong>Group Total: $${groupTotal.toFixed(2)}</strong>
+            </div>
+        `;
+
+        container.appendChild(groupSection);
+      });
+
+      // Update grand total
+      document.getElementById('group-total-value').textContent = grandTotal.toFixed(2);
+    }
+
+
+    function populateTable(items, grandTotal) {
+      const tbody = document.getElementById(containerId);
+      const totalElement = document.getElementById(totalId);
+
+      tbody.innerHTML = "";
+
+      items.forEach((item, index) => {
+        const extPrice = item.Quantity * item.List_Price;
+        const row = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.Product_Name?.name || "N/A"}</td>
+          <td>${item.Quantity || 0}</td>
+          <td>${item.UOM || "N/A"}</td>
+          <td>${item.List_Price?.toFixed(2) || "0.00"}</td>
+          <td>${item.Total_After_Discount?.toFixed(2) || "0.00"}</td>
+        </tr>
+      `;
+        tbody.innerHTML += row;
+      });
+
+      if (totalElement) {
+        totalElement.textContent = grandTotal?.toFixed(2) || "0.00";
+      }
+    }
+
+    function printTable() {
+      const table = document.getElementById("productTable");
+      const printSection = document.createElement("div");
+      printSection.id = "printSection";
+      printSection.innerHTML = table.outerHTML;
+      document.body.appendChild(printSection);
+      window.print();
+      document.body.removeChild(printSection);
+    }
+
+    ZOHO.embeddedApp.on("PageLoad", function (data) {
+      ZOHO.CRM.UI.Resize({ height: "700", width: "1600" });
+
+      rec_id = data.EntityId[0];
+      var conn_name = "z_crm";
+      var req_data = {
+        type: "GET",
+        url: "https://www.zohoapis.ca/crm/v7/Quotes/" + rec_id,
+      };
+
+
+      var rich_text_data = {
+        type: "GET",
+        url: "https://www.zohoapis.ca/crm/v7/Quotes/" + rec_id + "/actions/fetch_full_data",
+      };
+
+      ZOHO.CRM.CONNECTION.invoke(conn_name, rich_text_data).then(function (
+        data
+      ) {
+
+        console.log("rich_text_data--------------------", data.details.statusMessage.data[0]);
+        const recordMap = data.details.statusMessage.data[0];
+        console.log("recordMap", recordMap);
+        document.getElementById("Scope_of_work").style.fontSize = "13pt !important";
+        document.getElementById("Scope_of_work").innerHTML =
+         recordMap.Description_Information || "";
+        document.getElementById("proposalConditions").innerHTML =
+          recordMap.Terms_and_Condition || "";
+        document.getElementById("tomcoSupply").innerHTML =
+          recordMap.Tomco_to_Supply || "";
+        document.getElementById("customerSupply").innerHTML =
+          recordMap.Customer_to_Supply || "";
+      });
+
+      ZOHO.CRM.CONNECTION.invoke(conn_name, req_data).then(function (data) {
+        RecordMap = data.details.statusMessage.data[0];
+        console.log("RecordMap------------------------", RecordMap);
+
+        var contact_req_data = {
+          type: "GET",
+          url:
+            "https://www.zohoapis.ca/crm/v3/Contacts/" +
+            RecordMap.Contact_Name.id,
+        };
+
+        ZOHO.CRM.CONNECTION.invoke(conn_name, contact_req_data).then(
+          function (data) {
+            console.log("Data From API", data.details.statusMessage.data[0]);
+            contactRecordMap = data.details.statusMessage.data[0];
+            console.log("contactRecordMap", contactRecordMap);
+            Email = contactRecordMap.Email;
+            Phone = contactRecordMap.Phone;
+            // document.getElementById("sitePhone").innerText = Phone || "";
+            // document.getElementById("preparedUserPhone").innerText =
+            //   Phone || "";
+            // document.getElementById("phone").innerText = Email || "";
+
+            document.getElementById("siteContactPhone").innerText =
+              Phone || "";
+            document.getElementById("siteContactEmail").innerText =
+              Email || "";
+            console.log("Email", Email);
+          }
+        );
+        console.log("contactRecordMap--------------------", contactRecordMap);
+
+        var deal_req_data = {
+          "type": "GET",
+          "url": "https://www.zohoapis.ca/crm/v3/Deals/" + RecordMap.Deal_Name.id
+        };
+
+        ZOHO.CRM.CONNECTION.invoke(conn_name, deal_req_data)
+          .then(function (data) {
+            console.log("✔️✔️✔️✔️");
+
+            console.log("Deal data-----------------------------", data.details.statusMessage.data[0]);
+            dealRecordMap = data.details.statusMessage.data[0];
+
+            document.getElementById("mainheading").innerText = dealRecordMap.TOMCO_Company || "";
+            // document.getElementById("companyNameFooter").innerText = dealRecordMap.TOMCO_Company || "";
+
+            console.log("dealRecordMap.Job_Start_Date", dealRecordMap.Job_Start_Date);
+
+            if (dealRecordMap.Job_Start_Date) {
+              document.getElementById("estimatedStartDate").innerText = formatDateToMDY(dealRecordMap.Job_Start_Date);
+            } else {
+              document.getElementById("estimatedStartDate").innerText = "";
+            }
+
+
+            const TOMCO_Company =
+              (dealRecordMap.TOMCO_Company || "") +
+              "-" +
+              (dealRecordMap.Branch || "");
+
+            function escapeZohoCriteria(value) {
+
+              return value
+                .replace(/\\/g, "\\\\") // escape backslashes
+                .replace(/"/g, '\\"') // escape double quotes
+                .replace(/\(/g, "\\(") // escape (
+                .replace(/\)/g, "\\)") // escape )
+                .replace(/-/g, "\\-"); // escape hyphen
+            }
+
+            function cleanCompanyName(companyName) {
+              if (companyName.includes("CMMinspect")) {
+                return companyName.replace(/^TOMCO\s*/, "").trim();
+              }
+              return companyName;
+            }
+
+            const moduleApiName = "Accounts";
+            const searchType = "criteria";
+            const valueTOPass = cleanCompanyName(TOMCO_Company);
+            console.log("Value to pass:", TOMCO_Company);
+
+            const searchQuery = "(Account_Name:equals:" + cleanCompanyName(TOMCO_Company) + ")";
+            ZOHO.CRM.API.searchRecord({
+              Entity: moduleApiName,
+              Type: searchType,
+              Query: searchQuery,
+            })
+              .then(function (response) {
+                console.log("✅ Search Response:", response);
+
+                if (response.data && response.data[0]) {
+                  const accountData = response.data[0];
+
+                  console.log("Matched Account:", accountData);
+
+                  function formatCompanyName(companyName) {
+                    const regex = /^(.*)\sBC\s(.*)$/;
+                    const match = companyName.match(regex);
+
+                    if (match) {
+                      return `${match[1]} (BC) ${match[2]}`;
+                    }
+                    return companyName;
+                  }
+
+
+                  var addressParts = [];
+
+                  if (accountData.Billing_Street) addressParts.push(accountData.Billing_Street);
+                  if (accountData.Billing_Street_2) addressParts.push(accountData.Billing_Street_2);
+                  if (accountData.Billing_City) addressParts.push(accountData.Billing_City);
+                  if (accountData.Billing_State) addressParts.push(accountData.Billing_State);
+                  if (accountData.Billing_Country) addressParts.push(accountData.Billing_Country);
+                  if (accountData.Billing_Code) addressParts.push(accountData.Billing_Code);
+
+                  var companyAddress = addressParts.join(', ');
+
+
+
+
+                  console.log("companyAddress✔️✔️✔️✔️✔️✔️✔️✔️", companyAddress);
+
+                  document.getElementById("companyAddress").innerText =
+                    companyAddress;
+                  // document.getElementById("companyAdressFooter").innerText =
+                  // companyAddress;
+
+
+                  // document.getElementById("companyPhoneFooter").innerText =
+                  //   accountData.Phone || "";
+                  // document.getElementById("companyWebsite").innerText =
+                  // accountData.Website	 || "";
+                  document.getElementById("companyEmail").innerText =
+                    accountData.Billing_Email || "";
+
+                  const phone1_ = accountData.Phone || "";
+                  const phone2_ = accountData.phone_alternate || "";
+
+                  let phoneDisplay = "";
+
+                  if (phone1_ && phone2_) {
+                    phoneDisplay = `${phone1_} | ${phone2_}`;
+                  } else {
+                    phoneDisplay = phone1_ || phone2_;
+                  }
+
+                  document.getElementById("phoneContainer").innerText = phoneDisplay;
+
+                  if (accountData.Billing_Email) {
+                    document.getElementById("companyEmail").innerText =
+                      accountData.Billing_Email;
+                  } else {
+                    document.getElementById("companyEmail").innerText = "";
+                  }
+                } else {
+                  console.log("No matching account found.");
+                }
+              })
+              .catch(function (error) {
+                console.error("❌ Search API error:", error);
+              });
+
+
+          });
+
+        quoteNumber = RecordMap.Quote_Number;
+        deal_ID = RecordMap.Deal_Name.id;
+        Account_Name = RecordMap.Account_Name.name;
+        var Address =
+          RecordMap.Billing_Street +
+          ", " +
+          RecordMap.Billing_City +
+          ", " +
+          RecordMap.Billing_State +
+          ", " +
+          RecordMap.Billing_Country;
+        quoteDate = RecordMap.Created_Time;
+        Quoted_Items = RecordMap.Quoted_Items;
+        console.log("quoteDate---------------------------", Quoted_Items);
+        deal_ID = RecordMap.Deal_Name.id;
+        Quote_Number = RecordMap.Deal_Name.Quotes_Number;
+        Valid_Till = RecordMap.Deal_Name.Valid_Till;
+        Branch = RecordMap.Branch;
+        Quotes_Number = RecordMap.Quotes_Number;
+        const date = new Date(quoteDate);
+        document.getElementById("group-total-value").innerText =
+          RecordMap.Grand_Total;
+        document.getElementById("quoteNo").innerText = Quotes_Number;
+
+        if (RecordMap.Quote_Creation_Date) {
+          document.getElementById("quoteDate").innerText = formatDateToMDY(RecordMap.Valid_Till);
+        } else {
+          document.getElementById("quoteDate").innerText = "";
+        }
+
+        if (RecordMap.Valid_Till) {
+          document.getElementById("expiryDate").innerText = formatDateToMDY(RecordMap.Valid_Till);
+        } else {
+          document.getElementById("expiryDate").innerText = "";
+        }
+        document.getElementById("managingBranch").innerText = Branch;
+        document.getElementById("preparedContactName").innerText =
+          RecordMap.Contact_Name.name;
+        document.getElementById("preparedCompany").innerText =
+          RecordMap.Account_Name.name;
+
+
+        const addressParts = [
+          RecordMap.Billing_Street || "",
+          RecordMap.Billing_City || "",
+          RecordMap.Billing_State || "",
+          RecordMap.Billing_Country || "",
+          RecordMap.Billing_Code || "",
+        ];
+
+        // Filter out any empty strings and join them with commas
+        const fullBillingAddress = addressParts
+          .filter((part) => part.trim() !== "")
+          .join(", ");
+        document.getElementById("preparedBillingAddress").innerText =
+          fullBillingAddress;
+
+
+
+        // document.getElementById("preparedBillingAddress").innerText = RecordMap.Billing_Street  + ", " + RecordMap.Billing_City + ", " + RecordMap.Billing_State + ", " + RecordMap.Billing_Country+ ", "+ RecordMap.Billing_Code;
+        document.getElementById("siteLocation").innerText =
+          RecordMap.Location.name || "";
+        const siteaddressParts = [
+          RecordMap.Shipping_Street || "",
+          RecordMap.Shipping_City || "",
+          RecordMap.Shipping_State || "",
+          RecordMap.Shipping_Country || "",
+          RecordMap.Shipping_Code || "",
+        ];
+
+        // Join non-empty parts with a comma and space
+        document.getElementById("siteAddress").innerText = siteaddressParts.filter(part => part).join(", ");
+       
+        console.log(Phone, "<--->", contactRecordMap.Email);
+
+        document.getElementById("preparedUserName").innerText =
+          RecordMap.Owner.name || "";
+        document.getElementById("preparedUserEmail").innerText =
+          RecordMap.Owner.email || "";
+        document.getElementById("siteContactName").innerText =
+          RecordMap.Contact_Name.name || "";
+
+          var owner_req_data = {
+          type: "GET",
+          url:
+            "https://www.zohoapis.ca/crm/v3/users/" +
+            RecordMap.Owner.id +
+            "?type=AllUsers",
+        };
+
+        ZOHO.CRM.CONNECTION.invoke(conn_name, owner_req_data).then(function (
+          data
+        ) {
+          console.log("Data of owner--------------------", data);
+                ownerRecordMap = data.details.statusMessage.users[0].phone;
+          
+          if(ownerRecordMap!=null && ownerRecordMap!=undefined && ownerRecordMap!=""){
+            document.getElementById("preparedUserPhone").innerText =
+            ownerRecordMap || "";
+          }
+          // document.getElementById("mainheading").innerText =
+          //   ownerRecordMap.TOMCO_Company || "";
+        });
+
+        // document.getElementById(
+        //   "thankYouMessage"
+        // ).innerText = `Thank you for providing ${RecordMap.Contact_Name.name} the opportunity to offer you a proposal for this project.`;
+
+        // let rows = "";
+        // Quoted_Items.forEach((item, index) => {
+        //   const extPrice = item.Quantity * item.List_Price;
+        //   rows += `
+        //   <tr>
+        //     <th scope="row">${index + 1}</th>
+        //     <td scope="row">${item.Group}</td>
+        //     <td>${item.Product_Name.name}</td>
+        //     <td>${item.Quantity}</td>
+        //     <td>${item.UOM}</td>
+        //     <td>${item.List_Price}</td>
+        //     <td>${extPrice}</td>
+        //   </tr>
+        // `;
+        // });
+        // $("#productTable tbody").html(rows);
+        // Quoted_Items = RecordMap.Quoted_Items;
+
+        const groupedProducts = groupProductsByGroupName(Quoted_Items);
+        createGroupedTables(groupedProducts);
+      });
+    });
+
+    ZOHO.embeddedApp.init();
+  </script>
+</head>
+
+<body style="font-size: 10pt" id="pdfContent" class="page-break-control-container">
+  <div class="container mt-4">
+    <div id="loader" class="loader" style="display: none">
+      <div class="dot-pulse"></div>
+
+    </div>
+    <div id="companyHeader" style=" align-items: center;    margin-bottom: 20pt; ">
+      <table style="width: 100%; border: none !important;">
+        <tr>
+          <td style="width: 40%; border: none !important;">
+      <div style="">
+        <img src="data:image/png;base64,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
+" alt="Company Logo" style="max-width: 100%; height: auto" />
+      </div>
+          </td>
+          <td style="width: 60%;border: none !important;">
+            <div style="text-align: left; padding-left: 50px; float: right;">
+        <h1 id="mainheading" style="color: #1a4c6f; margin: 0; font-size: 13pt; font-weight: bold;"></h1>
+        <p class="btheading" style="margin: 2pt 0; font-size: 12px">
+          <span id="companyAddress" style="font-size: 12px"></span><br>
+          <span id="companyPhone" style="color: #02080e; text-decoration: underline;font-size: 12px">
+            <span id="phoneContainer" style="font-size: 12px"></span>
+          </span><br>
+          <span id="companyEmail" style="color: #01060a; text-decoration: underline;font-size: 12px">
+          </span>
+        </p>
+      </div>
+          </td>
+        </tr>
+      </table>
+      
+      
+    </div>
+
+    <div style="width: 100%">
+      <div style="display: flex">
+        <div style="width: 40%; padding: 10pt">
+          <div class="field-container" style="margin-bottom: 6pt; font-size: 12px;">
+            <strong>Quote No :</strong>
+            <span id="quoteNo" style="margin-left: 10pt" class="field-value"></span>
+          </div>
+          <div style="margin-bottom: 6pt; font-size: 12px;">
+            <strong>Quote Date :</strong>
+            <span id="quoteDate" style="margin-left: 10pt"></span>
+          </div>
+          <div style="margin-bottom: 6pt; font-size: 12px;">
+            <strong>Expiry Date :</strong>
+            <span id="expiryDate" style="margin-left: 10pt"></span>
+          </div>
+          <div style="margin-bottom: 6pt; font-size: 12px;">
+            <strong>Managing Branch :</strong>
+            <span id="managingBranch" style="margin-left: 10pt; font-size: large important!;"></span>
+          </div>
+        </div>
+        <div style="width: 60%; padding: 10pt">
+          <!-- Additional content if needed -->
+        </div>
+      </div>
+    </div>
+
+    <div id="billToDetails">
+      <table style="width: 100%; border-collapse: collapse">
+        <tr style="color: white; background-color: #1a4c6f">
+          <th style="width: 50%; text-align: left; padding: 6pt; font-weight: 500;">
+            Prepared For
+          </th>
+          <th style="width: 50%; text-align: left; padding: 6pt; font-weight: 500;">
+            Site Info.
+          </th>
+        </tr>
+
+        <!-- Row 1: Contact Name / Location Name -->
+        <tr>
+          <td style="padding: 6pt; font-size: 12px;"><span id="preparedContactName"></span></td>
+          <td style="padding: 6pt; font-size: 12px;"><span id="siteLocation"></span></td>
+        </tr>
+        <tr>
+          <td style="padding: 6pt; font-size: 12px;"><span id="preparedCompany"></span></td>
+          <td style="padding: 6pt; font-size: 12px;"><span id="siteAddress"></span></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 6pt; font-size: 12px;">
+            <span id="preparedBillingAddress"></span>
+          </td>
+          <!-- <td style="padding: 6pt; font-size: 12px;"><span id="contactName"></span></td> -->
+        </tr>
+        <!-- <tr>
+            <td></td>
+            <td style="padding: 6pt; font-size: 12px;"><span id="sitePhone"></span></td>
+          </tr> -->
+
+      </table>
+    </div>
+
+    <div id="customerContacts" style="margin-top: 3%">
+      <table style="width: 100%; border-collapse: collapse">
+        <tr style="color: white; background-color: #1a4c6f">
+          <th style="width: 50%; text-align: left; padding: 6pt; font-weight: 500;">
+            Prepared By
+          </th>
+          <th style="width: 50%; text-align: left; padding: 6pt; font-weight: 500;">
+            Site Contact
+          </th>
+        </tr>
+
+        <!-- Row 1: User Name / Contact Name -->
+        <tr>
+          <td style="padding: 6pt; font-size: 12px;"><span id="preparedUserName"></span></td>
+          <td style="padding: 6pt; font-size: 12px;"><span id="siteContactName"></span></td>
+        </tr>
+
+        <!-- Row 2: User Phone / Contact Phone -->
+        <tr>
+          <td style="padding: 6pt; font-size: 12px;"><span id="preparedUserPhone"></span></td>
+          <td style="padding: 6pt; font-size: 12px;"><span id="siteContactPhone"></span></td>
+        </tr>
+
+        <!-- Row 3: User Email / Contact Email -->
+        <tr>
+          <td style="padding: 6pt; font-size: 12px;"><span id="preparedUserEmail"></span></td>
+          <td style="padding: 6pt; font-size: 12px;"><span id="siteContactEmail"></span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="group-section avoid-break">
+      <div class="">
+        <h2 style="margin-top: 16px; font-size: 16px; font-weight: 500;">Scope of Work:</h2>
+        <p id="Scope_of_work" style="font-size: 12px;"></p>
+      </div>
+    </div>
+
+    <div class="mb-3 d-flex align-items-center group-section avoid-break">
+      <label for="estimatedStartDate" class="form-label me-2 mb-0 cost_breakdownImp"
+        style="min-width: 100pt;font-size: 16px; font-weight: 500;">
+        Estimated Start Date:
+      </label>
+      <div id="estimatedStartDate" style="padding: 1pt 12pt; min-width: 150pt; font-size: 12px;">
+      </div>
+    </div>
+
+    <br />
+
+    <div class="" style="margin-top: 1%">
+      <h4 class="cost_breakdownImp" style="font-weight: 500; font-size: 16px;">COST BREAKDOWN</h4>
+
+      <div class="quote-table-container" id="productTableContainer" style="margin-bottom: 60px !important">
+
+      </div>
+      <div class="total-section" style="text-align: right;">
+        <strong>Grand Total: $<span class="cost_breakdownImp" id="group-total-value">0.00</span></strong>
+      </div>
+
+
+
+      <!-- Uncomment and modify Proposal Conditions -->
+      <div class="page-section">
+        <h3 style="
+            text-decoration: underline;
+            margin-bottom: 10pt;
+            font-size: 16px;
+            font-weight: bold;
+          ">
+          Proposal Conditions:
+        </h3>
+        <div class="rich-text-content" id="proposalConditions" style="font-size:12px"></div>
+      </div>
+
+      <!-- Uncomment and modify TOMCO to Supply Section -->
+      <div class="page-section">
+        <h3 style="
+            text-decoration: underline;
+            margin-bottom: 10pt;
+            font-size: 16px;
+            font-weight: bold;
+          ">
+          TOMCO to Supply:
+        </h3>
+        <div class="rich-text-content" id="tomcoSupply" style="font-size:12px"></div>
+      </div>
+
+      <!-- Uncomment and modify Customer to Supply Section -->
+      <div class="page-section">
+        <h3 style="
+            text-decoration: underline;
+            margin-bottom: 10pt;
+            font-size: 16px;
+            font-weight: bold;
+          ">
+          Customer to Supply:
+        </h3>
+        <div class="rich-text-content" id="customerSupply" style="font-size:12px !important"></div>
+      </div>
+
+      <!-- Signature Section -->  
+      <table style="width: 100%; border-collapse: collapse; margin-top: 40pt">
+        <tr>
+          <td style="width: 45%; padding-right: 5%">
+            <div style="
+                border-bottom: 2pt solid #000;
+                padding-bottom: 20pt;
+                margin-bottom: 10pt;
+                height: 30pt;
+              "></div>
+            <p style="text-align: center; font-style: italic; font-weight: bold">
+              Signature of Acceptance
+            </p>
+          </td>
+          <td style="width: 45%; padding-left: 5%">
+            <div style="
+                border-bottom: 2pt solid #000;
+                padding-bottom: 20pt;
+                margin-bottom: 10pt;
+                height: 30pt;
+              "></div>
+            <p style="text-align: center; font-style: italic; font-weight: bold">
+              Signature Date
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="text-center no-print">
+      <button class="btn btn-primary custom-button mt-2 mb-5" id="generateUploadPdfButton">Attach Quote</button>
+  </div>
+
+  
+    <!-- <div
+      class="footer-bar"
+      style="height: 20%; margin-top: 10%; padding: 10pt 0"
+    >
+      <span id ="companyNameFooter" style="margin-left: 4%"></span>
+      <span id ="companyAdressFooter" style="margin-left: 4%">&bull; </span
+      >
+      <span id ="companyPhoneFooter" style="margin-left: 4%">&bull; </span>
+      <span id ="companyWebsite" style="margin-left: 4%">&bull; </span>
+      
+    </div> -->
+</body>
+<script>
+ 
+    
+  document.getElementById("generateUploadPdfButton").addEventListener("click", function() {
+    const htmlContent = document.getElementById("pdfContent").innerHTML;
+    const styleTag = `<style>.no-print { display: none; }</style>`; 
+    const finalHtmlContent = styleTag + htmlContent;
+
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("generateUploadPdfButton").style.display = "none";
+    let quoteNum = document.getElementById("quoteNo").innerText.trim();
+
+console.log("quoteNumber----------------",quoteNum);
+    $.ajax({
+        url: 'https://parecredit.crm-masters.com/createpdf.php', 
+        type: 'POST',
+        data: { 
+            html_content: finalHtmlContent,
+            deal_id: deal_ID,
+            quoteNumber:document.getElementById("quoteNo").innerText.trim(),
+             "Type":"Detail"
+        },
+        success: function(response) {
+            console.log("API Response:", response);
+            
+            if (response.success) {
+                Swal.fire({
+                    title: "Success!",
+                    text: response.message,
+                    icon: "success",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    ZOHO.CRM.UI.Popup.close();
+                });
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: response.error || "Failed to attach document",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to communicate with server",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
+            console.error("AJAX Error:", error);
+        },
+        complete: function() {
+            document.getElementById("loader").style.display = "none";
+        }
+    });
+});
+
+</script>
+
+</html>
